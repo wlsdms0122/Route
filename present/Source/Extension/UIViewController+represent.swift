@@ -9,42 +9,35 @@
 import UIKit
 
 extension UIViewController {
-    func represent(_ viewController: UIViewController, animated: Bool, completion: ((Bool) -> Void)? = nil, compare: ((UIViewController) -> Bool)? = nil) {
-        let isRouteSuccess: Bool
-        if let compare = compare {
-            isRouteSuccess = UIViewController.route(animated: animated, compare: compare)
-        } else {
-            isRouteSuccess = UIViewController.route(viewController, animated: animated)
+    func represent(_ viewController: UIViewController, animated: Bool, completion: (() -> Void)? = nil, compare: (UIViewController) -> Bool) {
+        UIViewController.route(animated: animated, compare: compare) { [weak self] isRouteSuccess in
+            guard !isRouteSuccess else {
+                completion?()
+                return
+            }
+            
+            self?.present(viewController, animated: animated) { completion?() }
         }
-        
-        guard !isRouteSuccess else {
-            completion?(false)
-            return
-        }
-        
-        present(viewController, animated: animated) { completion?(true) }
-    }
-    
-    /// Route to view controller of controller stack that equal with passed view controller.
-    static func route(_ viewController: UIViewController, animated: Bool) -> Bool {
-        UIViewController.route(animated: animated) { $0 == viewController }
     }
     
     /// Route to view controller of controller stack that search with compare closure.
-    static func route(animated: Bool, compare: (UIViewController) -> Bool) -> Bool {
-        guard let viewController = UIViewController.search(compare) else { return false }
-        viewController.route(animated: animated)
-        return true
+    static func route(animated: Bool, compare: (UIViewController) -> Bool, completion: ((Bool) -> Void)? = nil) {
+        guard let viewController = UIViewController.search(compare) else {
+            completion?(false)
+            return
+        }
+        viewController.route(animated: animated) { completion?(true) }
     }
     
     /// Route to view controller with animation or not
-    private func route(animated: Bool) {
+    private func route(animated: Bool, completion: (() -> Void)?) {
         if presentedViewController != nil {
             // Dismiss child view controller if view controller already presented.
-            dismiss(animated: animated, completion: nil)
+            dismiss(animated: animated, completion: completion)
         }
         
         route(parent: parent, animated: animated)
+        completion?()
     }
     
     private func route(parent: UIViewController?, animated: Bool) {
@@ -64,11 +57,6 @@ extension UIViewController {
         parent.route(parent: parent.parent, animated: animated)
     }
     
-    /// Search view controller that equal with passed view controller.
-    static func search(_ viewController: UIViewController) -> UIViewController? {
-        UIViewController.allControllers.filter { $0 == viewController }.last
-    }
-    
     /// Search view controller that compared by closure.
     static func search(_ compare: (UIViewController) -> Bool) -> UIViewController? {
         UIViewController.allControllers.filter(compare).last
@@ -83,11 +71,11 @@ extension UIViewController {
             viewControllers += presented.subControllers
             viewController = presented
         }
-
+        
         return viewControllers
     }
     
-    var subControllers: [UIViewController] {
+    private var subControllers: [UIViewController] {
         children.reduce([self]) { $0 + $1.subControllers }
     }
 }

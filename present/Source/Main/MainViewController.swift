@@ -70,8 +70,12 @@ class MainViewController: UIViewController {
             .map { Int($0) }
             .subscribe(onNext: { [weak self] id in
 //                let viewController = UINavigationController(rootViewController: MainViewController(id: id))
-                if UIViewController.route(animated: true) { ($0 as? MainViewController)?.id == id } {
-                    count = id
+                UIViewController.route(animated: true) {
+                    ($0 as? MainViewController)?.id == id
+                } completion: {
+                    if $0 {
+                        count = id
+                    }
                 }
 //                self?.repush(viewController, animated: true, completion: {
 //                    guard $0 else { return }
