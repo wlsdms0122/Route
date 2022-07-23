@@ -1,7 +1,9 @@
-### macOS ###
-# General
 .DS_Store
-
-### Xcode ###
-## User settings
+/.build
+/Packages
+/*.xcodeproj
 xcuserdata/
+DerivedData/
+.swiftpm/config/registries.json
+.swiftpm/xcode/package.xcworkspace/contents.xcworkspacedata
+.netrc
