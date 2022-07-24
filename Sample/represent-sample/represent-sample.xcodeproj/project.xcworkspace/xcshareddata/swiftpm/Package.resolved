@@ -1,0 +1,41 @@
+{
+  "pins" : [
+    {
+      "identity" : "jstoast",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wlsdms0122/JSToast",
+      "state" : {
+        "revision" : "d273d1b24f1e0823102d0dd0cfa787e282413aea",
+        "version" : "2.0.0"
+      }
+    },
+    {
+      "identity" : "represent",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/wlsdms0122/Represent",
+      "state" : {
+        "revision" : "b4d4b9f1aff76b9dc00de57c7171c4a686fc9c9b",
+        "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "rxswift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/ReactiveX/RxSwift",
+      "state" : {
+        "revision" : "002d325b0bdee94e7882e1114af5ff4fe1e96afa",
+        "version" : "5.1.1"
+      }
+    },
+    {
+      "identity" : "snapkit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SnapKit/SnapKit",
+      "state" : {
+        "revision" : "d458564516e5676af9c70b4f4b2a9178294f1bc6",
+        "version" : "5.0.1"
+      }
+    }
+  ],
+  "version" : 2
+}
