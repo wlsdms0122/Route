@@ -12,28 +12,76 @@ import RxSwift
 import RxCocoa
 import JSToast
 
-class MainViewController: UIViewController {
+struct SectionDataSource {
+    let section: [MainSection]
+    
+    init(_ section: [MainSection] = []) {
+        self.section = section
+    }
+    
+    subscript(indexPath: IndexPath) -> MainItem {
+        section[indexPath.section].items[indexPath.item]
+    }
+}
+
+struct MainSection {
+    let model: MainModel
+    let items: [MainItem]
+    
+    init(
+        model: MainModel = MainModel(),
+        items: [MainItem]
+    ) {
+        self.model = model
+        self.items = items
+    }
+}
+
+struct MainModel {
+    let title: String?
+    let description: String?
+    
+    init(
+        title: String? = nil,
+        description: String? = nil
+    ) {
+        self.title = title
+        self.description = description
+    }
+}
+
+enum MainItem {
+    case id(Int)
+    case stack([Int])
+    case step(Int)
+    case route
+    case log
+    case presentNavigation
+    case presentTabBar
+    case push
+}
+
+class MainViewController: UIViewController, Identifiable {
     // MARK: - View
     private let root = MainView()
     
-    private var idLabel: UILabel { root.idLabel }
-    private var idStepper: UIStepper { root.idStepper }
-    private var routeButton: UIButton { root.routeButton }
-    private var logButton: UIButton { root.logButton }
-    
-    private var presentNavigationButton: UIButton { root.presentNavigationButton }
-    private var presentTabButton: UIButton { root.presentTabButton }
-    private var pushButton: UIButton { root.pushButton }
+    private var tableView: UITableView { root.tableView }
 
     // MARK: - Property
+    private var dataSource = SectionDataSource()
+    
+    private var routeID: Int
+    let id: Int
+    
     private let disposeBag = DisposeBag()
     
-    private var newWindow: UIWindow?
-    
     // MARK: - Initializer
-    init() {
+    init(id: Int) {
+        self.id = id
+        self.routeID = id
         super.init(nibName: nil, bundle: nil)
-        bind()
+        
+        setUp()
     }
     
     required init?(coder: NSCoder) {
@@ -48,136 +96,145 @@ class MainViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        idLabel.text = title
-        idStepper.value = Double(title ?? "") ?? 0
+        updateDataSource()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        updateDataSource()
     }
     
     // MARK: - Public
     
     // MARK: - Private
-    private func bind() {
-        idStepper.rx.value
-            .map { "\(Int($0))" }
-            .bind(to: idLabel.rx.text)
-            .disposed(by: disposeBag)
+    private func setUp() {
+        setUpLayout()
+        setUpState()
+        setUpAction()
+    }
+    
+    private func setUpLayout() {
         
-        routeButton.rx.tap
-            .withLatestFrom(idStepper.rx.value)
-            .map { Int($0) }
-            .subscribe(onNext: { [weak self] id in
-                self?.route(animated: true) {
-                    $0.title == "\(id)"
-                } completion: { [weak self] in
-                    guard let viewController = $0?.topMostViewController else {
-                        self?.showToast(message: "Fail to route to \(id).")
-                        return
-                    }
-                    
-                    self?.showToast(
-                        message: """
-                        Success to route to \(id).
-                        Current presented view controller is \(viewController.title ?? "UNKNOWN").
-                        """
+    }
+    
+    private func setUpState() {
+        title = String(id)
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+    }
+    
+    private func setUpAction() {
+        
+    }
+    
+    private func updateDataSource() {
+        dataSource = SectionDataSource([
+            .init(
+                model: .init(
+                    title: "IDENTIFICATION"
+                ),
+                items: [
+                    .id(id),
+                    .stack(
+                        allViewControllers.compactMap { ($0 as? any Identifiable)?.id }
+                            .compactMap { $0 as? Int }
                     )
-                    
-                    if let id = Int(viewController.title ?? "") {
-                        count = id + 1
-                    }
-                }
-            })
-            .disposed(by: disposeBag)
+                ]
+            ),
+            .init(
+                model: .init(
+                    title: "ACTION"
+                ),
+                items: [
+                    .step(routeID),
+                    .route,
+                    .log
+                ]
+            ),
+            .init(
+                model: .init(
+                    title: "ROUTING"
+                ),
+                items: [
+                    .presentNavigation,
+                    .presentTabBar,
+                    .push
+                ]
+            )
+        ])
         
-        logButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                print(self?.superViewController.subViewControllers)
-            })
-            .disposed(by: disposeBag)
-        
-        presentNavigationButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.presentNavigationController(id: count)
-                count += 2
-            })
-            .disposed(by: disposeBag)
-        
-        presentTabButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.presentTabBarController(id: count)
-                count += 7
-            })
-            .disposed(by: disposeBag)
-        
-        pushButton.rx.tap
-            .subscribe(onNext: { [weak self] in
-                self?.pushController(id: count)
-                count += 1
-            })
-            .disposed(by: disposeBag)
+        tableView.reloadData()
     }
     
-    private func presentNavigationController(id: Int) {
-        let viewController = MainViewController()
-        viewController.title = "\(id + 1)"
-        
-        let navigationController = UINavigationController(rootViewController: viewController)
-        navigationController.title = "\(id)"
-        
-        present(navigationController, animated: true, completion: nil)
+    private func route(to id: Int) {
+        route(animated: true) {
+            guard let identifiable = $0 as? any Identifiable else { return false }
+            return (identifiable.id as? Int) == id
+        } completion: { [weak self] in
+            guard let viewController = $0 else {
+                self?.showToast(message: "Fail to route. Not found \(id) view controller.")
+                return
+            }
+            
+            self?.showToast(
+                message: """
+                Success to route.
+                
+                \(viewController)
+                """
+            )
+        }
     }
     
-    private func presentTabBarController(id: Int) {
-        let viewController1 = MainViewController()
-        viewController1.title = "\(id + 3)"
-        
-        let navigationController1 = UINavigationController(rootViewController: viewController1)
-        navigationController1.title = "\(id + 2)"
-        navigationController1.tabBarItem = UITabBarItem(
-            title: "\(id + 2)",
-            image: UIImage(systemName: "circle"),
-            selectedImage: UIImage(systemName: "circle.fill")
+    private func presentNavigationController() {
+        let viewController = IDNavigationController(
+            id: AppDelegate.getID(),
+            rootViewController: MainViewController(id: AppDelegate.getID())
         )
         
-        let viewController2 = MainViewController()
-        viewController2.title = "\(id + 5)"
-        
-        let navigationController2 = UINavigationController(rootViewController: viewController2)
-        navigationController2.title = "\(id + 4)"
-        navigationController2.tabBarItem = UITabBarItem(
-            title: "\(id + 4)",
-            image: UIImage(systemName: "circle"),
-            selectedImage: UIImage(systemName: "circle.fill")
+        present(
+            viewController,
+            animated: true
         )
-        
-        let viewController3 = MainViewController()
-        viewController3.title = "\(id + 7)"
-        
-        let navigationController3 = UINavigationController(rootViewController: viewController3)
-        navigationController3.title = "\(id + 6)"
-        navigationController3.tabBarItem = UITabBarItem(
-            title: "\(id + 6)",
-            image: UIImage(systemName: "circle"),
-            selectedImage: UIImage(systemName: "circle.fill")
-        )
-        
-        let tabBarController = UITabBarController()
-        tabBarController.title = "\(id + 1)"
-        tabBarController.viewControllers = [
-            navigationController1,
-            navigationController2,
-            navigationController3
-        ]
-        
-        let navigationController = UINavigationController(rootViewController: tabBarController)
-        navigationController.title = "\(id)"
-        
-        present(navigationController, animated: true, completion: nil)
     }
     
-    private func pushController(id: Int) {
-        let viewController = MainViewController()
-        viewController.title = "\(id)"
+    private func presentTabBarController() {
+        let viewController = IDNavigationController(
+            id: AppDelegate.getID(),
+            rootViewController: IDTabBarController(
+                id: AppDelegate.getID(),
+                viewControllers: [
+                    IDNavigationController(
+                        id: AppDelegate.getID(),
+                        rootViewController: MainViewController(id: AppDelegate.getID())
+                    ),
+                    IDNavigationController(
+                        id: AppDelegate.getID(),
+                        rootViewController: MainViewController(id: AppDelegate.getID())
+                    ),
+                    IDNavigationController(
+                        id: AppDelegate.getID(),
+                        rootViewController: MainViewController(id: AppDelegate.getID())
+                    )
+                ]
+            )
+        )
         
-        navigationController?.pushViewController(viewController, animated: true)
+        present(
+            viewController,
+            animated: true
+        )
+    }
+    
+    private func pushController() {
+        let viewController = MainViewController(id: AppDelegate.getID())
+        
+        navigationController?.pushViewController(
+            viewController,
+            animated: true
+        )
     }
     
     private func showToast(message: String) {
@@ -187,7 +244,134 @@ class MainViewController: UIViewController {
             positions: [
                 .inside(of: .top),
                 .center(of: .x)
-            ]
+            ],
+            boundary: .init(top: 8, left: 8, bottom: 8, right: 8),
+            showAnimator: .slideIn(duration: 0.1, direction: .down)
         )
+    }
+}
+
+extension MainViewController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        dataSource.section.count
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        dataSource.section[section].items.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let item = dataSource[indexPath]
+        
+        switch item {
+        case let .id(id):
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { fatalError() }
+            
+            cell.configure(title: "ID", description: String(id))
+            
+            return cell
+            
+        case let .stack(stack):
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Stack", description: stack.description)
+            
+            return cell
+            
+        case let .step(id):
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainStepTableViewCell", for: indexPath) as? MainStepTableViewCell else { fatalError() }
+            
+            cell.configure(
+                value: id,
+                range: (0 ..< .max)
+            ) { [weak self] in
+                self?.routeID = $0
+            }
+            
+            return cell
+            
+        case .route:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainActionTableViewCell", for: indexPath) as? MainActionTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Route")
+            
+            return cell
+            
+        case .log:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainActionTableViewCell", for: indexPath) as? MainActionTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Print Log")
+            
+            return cell
+            
+        case .presentNavigation:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainActionTableViewCell", for: indexPath) as? MainActionTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Present Navigation Controller")
+            
+            return cell
+            
+        case .presentTabBar:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainActionTableViewCell", for: indexPath) as? MainActionTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Present Tab Bar Controller")
+            
+            return cell
+            
+        case .push:
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainActionTableViewCell", for: indexPath) as? MainActionTableViewCell else { fatalError() }
+            
+            cell.configure(title: "Push")
+            
+            return cell
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        dataSource.section[section].model.title
+    }
+    
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        dataSource.section[section].model.description
+    }
+    
+    func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        let item = dataSource[indexPath]
+        
+        switch item {
+        case .id,
+            .stack,
+            .step:
+            return nil
+            
+        default:
+            return indexPath
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = dataSource[indexPath]
+        
+        tableView.deselectRow(at: indexPath, animated: true)
+        
+        switch item {
+        case .route:
+            route(to: routeID)
+            
+        case .log:
+            print("Hello world!")
+            
+        case .presentNavigation:
+            presentNavigationController()
+            
+        case .presentTabBar:
+            presentTabBarController()
+            
+        case .push:
+            pushController()
+            
+        default:
+            break
+        }
     }
 }

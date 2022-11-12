@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		F312580A288C069F0045A085 /* Represent in Frameworks */ = {isa = PBXBuildFile; productRef = F3125809288C069F0045A085 /* Represent */; };
 		F312580D288D06460045A085 /* JSToast in Frameworks */ = {isa = PBXBuildFile; productRef = F312580C288D06460045A085 /* JSToast */; };
 		F3125810288D06520045A085 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F312580F288D06520045A085 /* ToastView.swift */; };
 		F3A626D7249BB57E00732A13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3A626D6249BB57E00732A13 /* AppDelegate.swift */; };
@@ -19,6 +18,12 @@
 		F3A626F4249BB67F00732A13 /* RxRelay in Frameworks */ = {isa = PBXBuildFile; productRef = F3A626F3249BB67F00732A13 /* RxRelay */; };
 		F3A626F6249BB67F00732A13 /* RxSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F3A626F5249BB67F00732A13 /* RxSwift */; };
 		F3A626F8249BB67F00732A13 /* RxCocoa in Frameworks */ = {isa = PBXBuildFile; productRef = F3A626F7249BB67F00732A13 /* RxCocoa */; };
+		F3C6DA76291E88B300F0B42D /* Represent in Frameworks */ = {isa = PBXBuildFile; productRef = F3C6DA75291E88B300F0B42D /* Represent */; };
+		F3C6DA79291E8A5900F0B42D /* IDTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6DA78291E8A5900F0B42D /* IDTabBarController.swift */; };
+		F3C6DA7B291E8A5E00F0B42D /* IDNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6DA7A291E8A5E00F0B42D /* IDNavigationController.swift */; };
+		F3C6DA7E291E96A200F0B42D /* MainTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6DA7D291E96A200F0B42D /* MainTableViewCell.swift */; };
+		F3C6DA80291E9EF500F0B42D /* MainActionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6DA7F291E9EF500F0B42D /* MainActionTableViewCell.swift */; };
+		F3C6DA82291EA04B00F0B42D /* MainStepTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3C6DA81291EA04B00F0B42D /* MainStepTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +35,11 @@
 		F3A626E2249BB58300732A13 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F3A626E4249BB58300732A13 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F3A626ED249BB62200732A13 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		F3C6DA78291E8A5900F0B42D /* IDTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDTabBarController.swift; sourceTree = "<group>"; };
+		F3C6DA7A291E8A5E00F0B42D /* IDNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDNavigationController.swift; sourceTree = "<group>"; };
+		F3C6DA7D291E96A200F0B42D /* MainTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainTableViewCell.swift; sourceTree = "<group>"; };
+		F3C6DA7F291E9EF500F0B42D /* MainActionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainActionTableViewCell.swift; sourceTree = "<group>"; };
+		F3C6DA81291EA04B00F0B42D /* MainStepTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainStepTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -38,11 +48,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				F3A626F6249BB67F00732A13 /* RxSwift in Frameworks */,
-				F312580A288C069F0045A085 /* Represent in Frameworks */,
 				F3A626F4249BB67F00732A13 /* RxRelay in Frameworks */,
 				F312580D288D06460045A085 /* JSToast in Frameworks */,
 				F3A626F8249BB67F00732A13 /* RxCocoa in Frameworks */,
 				F3A626F1249BB66200732A13 /* SnapKit in Frameworks */,
+				F3C6DA76291E88B300F0B42D /* Represent in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -52,6 +62,7 @@
 		F312580E288D064C0045A085 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				F3C6DA7C291E968600F0B42D /* Cell */,
 				F312580F288D06520045A085 /* ToastView.swift */,
 			);
 			path = View;
@@ -80,6 +91,7 @@
 			children = (
 				F3A626D5249BB57E00732A13 /* represent-sample */,
 				F3A626D4249BB57E00732A13 /* Products */,
+				F3C6DA74291E88A200F0B42D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -113,6 +125,7 @@
 		F3A626EB249BB58E00732A13 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				F3C6DA77291E8A4500F0B42D /* Base */,
 				F332F68A24BAF01D0087D627 /* App */,
 				F332F68B24BAF0220087D627 /* Main */,
 			);
@@ -125,6 +138,32 @@
 				F3A626DF249BB58300732A13 /* Assets.xcassets */,
 			);
 			path = Resource;
+			sourceTree = "<group>";
+		};
+		F3C6DA74291E88A200F0B42D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F3C6DA77291E8A4500F0B42D /* Base */ = {
+			isa = PBXGroup;
+			children = (
+				F3C6DA78291E8A5900F0B42D /* IDTabBarController.swift */,
+				F3C6DA7A291E8A5E00F0B42D /* IDNavigationController.swift */,
+			);
+			path = Base;
+			sourceTree = "<group>";
+		};
+		F3C6DA7C291E968600F0B42D /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				F3C6DA7D291E96A200F0B42D /* MainTableViewCell.swift */,
+				F3C6DA7F291E9EF500F0B42D /* MainActionTableViewCell.swift */,
+				F3C6DA81291EA04B00F0B42D /* MainStepTableViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -148,8 +187,8 @@
 				F3A626F3249BB67F00732A13 /* RxRelay */,
 				F3A626F5249BB67F00732A13 /* RxSwift */,
 				F3A626F7249BB67F00732A13 /* RxCocoa */,
-				F3125809288C069F0045A085 /* Represent */,
 				F312580C288D06460045A085 /* JSToast */,
+				F3C6DA75291E88B300F0B42D /* Represent */,
 			);
 			productName = present;
 			productReference = F3A626D3249BB57E00732A13 /* represent-sample.app */;
@@ -182,7 +221,6 @@
 			packageReferences = (
 				F3A626EF249BB66200732A13 /* XCRemoteSwiftPackageReference "SnapKit" */,
 				F3A626F2249BB67F00732A13 /* XCRemoteSwiftPackageReference "RxSwift" */,
-				F3125808288C069F0045A085 /* XCRemoteSwiftPackageReference "Represent" */,
 				F312580B288D06460045A085 /* XCRemoteSwiftPackageReference "JSToast" */,
 			);
 			productRefGroup = F3A626D4249BB57E00732A13 /* Products */;
@@ -214,6 +252,11 @@
 				F3125810288D06520045A085 /* ToastView.swift in Sources */,
 				F3A626DB249BB57E00732A13 /* MainViewController.swift in Sources */,
 				F3A626EE249BB62200732A13 /* MainView.swift in Sources */,
+				F3C6DA82291EA04B00F0B42D /* MainStepTableViewCell.swift in Sources */,
+				F3C6DA7E291E96A200F0B42D /* MainTableViewCell.swift in Sources */,
+				F3C6DA79291E8A5900F0B42D /* IDTabBarController.swift in Sources */,
+				F3C6DA7B291E8A5E00F0B42D /* IDNavigationController.swift in Sources */,
+				F3C6DA80291E9EF500F0B42D /* MainActionTableViewCell.swift in Sources */,
 				F3A626D7249BB57E00732A13 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -282,7 +325,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -336,7 +379,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -404,14 +447,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F3125808288C069F0045A085 /* XCRemoteSwiftPackageReference "Represent" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/wlsdms0122/Represent";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 		F312580B288D06460045A085 /* XCRemoteSwiftPackageReference "JSToast" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/wlsdms0122/JSToast";
@@ -439,11 +474,6 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F3125809288C069F0045A085 /* Represent */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F3125808288C069F0045A085 /* XCRemoteSwiftPackageReference "Represent" */;
-			productName = Represent;
-		};
 		F312580C288D06460045A085 /* JSToast */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F312580B288D06460045A085 /* XCRemoteSwiftPackageReference "JSToast" */;
@@ -468,6 +498,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = F3A626F2249BB67F00732A13 /* XCRemoteSwiftPackageReference "RxSwift" */;
 			productName = RxCocoa;
+		};
+		F3C6DA75291E88B300F0B42D /* Represent */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Represent;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

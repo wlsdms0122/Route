@@ -10,11 +10,23 @@ import UIKit
 import SnapKit
 
 final class ToastView: UIView {
+    enum Color {
+        static let background: UIColor = UIColor(dynamicProvider: {
+            switch $0.userInterfaceStyle {
+            case .dark:
+                return .init(red: 209.0 / 255, green: 209.0 / 255, blue: 214.0 / 255, alpha: 1)
+                
+            default:
+                return .init(red: 28.0 / 255, green: 28.0 / 255, blue: 30.0 / 255, alpha: 1)
+            }
+        })
+    }
+    
     // MARK: - View
     private let titleLabel: UILabel = {
         let view = UILabel()
         view.numberOfLines = 0
-        view.textColor = .white
+        view.textColor = .systemGray6
         
         return view
     }()
@@ -35,6 +47,11 @@ final class ToastView: UIView {
     }
     
     // MARK: - Lifecycle
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        layer.cornerRadius = min(bounds.height / 2, 22)
+    }
     
     // MARK: - Public
     
@@ -53,15 +70,18 @@ final class ToastView: UIView {
         
         titleLabel.snp.makeConstraints {
             $0.top.bottom.equalToSuperview()
-                .inset(8)
+                .inset(12)
             $0.trailing.leading.equalToSuperview()
-                .inset(16)
+                .inset(24)
         }
     }
     
     private func setUpState() {
-        backgroundColor = .black.withAlphaComponent(0.7)
-        layer.cornerRadius = 8
+        backgroundColor = Color.background
+        
+        layer.shadowColor = Color.background.withAlphaComponent(0.75).cgColor
+        layer.shadowOpacity = 1
+        layer.shadowOffset = .init(width: 0, height: 2)
         
         titleLabel.text = message
     }
