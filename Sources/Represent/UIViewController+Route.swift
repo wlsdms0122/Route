@@ -1,5 +1,5 @@
 //
-//  UIViewController+represent.swift
+//  UIViewController+Route.swift
 //  present
 //
 //  Created by JSilver on 2020/06/19.
@@ -8,54 +8,26 @@
 
 import UIKit
 
-public extension UIViewController {
-    /// Re present the view controller.
-    /// If the view controller is already exist in stack, route to the view controller that satisfies compare statement.
-    /// Or not, present the view controller.
-    ///
-    /// Completion closure pass the view controller one of presented view controller or routed view controller.
-    func represent(
-        _ viewController: UIViewController,
-        animated: Bool,
-        compare: (UIViewController) -> Bool,
-        completion: ((UIViewController) -> Void)? = nil
-    ) {
-        // Route to the view controller that satisfies the compare statement.
-        route(
-            animated: animated,
-            compare: compare
-        ) { [weak self] destination in
-            guard let destination = destination else {
-                // If fail to route, present the passed view controller.
-                self?.present(viewController, animated: animated) { completion?(viewController) }
-                return
-            }
-            
-            // If succes to route, pass found view controller to completion handler.
-            completion?(destination)
-        }
-    }
-    
-    /// Route to the view controller that satisfies compare statement in requested view controller's stack.
+extension UIViewController {
+    /// Route to a view controller that satisfies compare statement in receiver's children.
     ///
     /// ```
     /// route(animated: true) {
     ///     $0 is SomeViewController
     /// } completion {
     ///     guard let viewController = $0 else {
-    ///         // Fail to route. not exist view controller
-    ///         // that satisfies the compare statements.
+    ///         // Fail to route. view controlelr that satisfies the compare statements not found.
     ///         return
     ///     }
     ///     // Success to route.
     /// }
     /// ```
-    func route(
+    public func route(
         animated: Bool,
-        compare: (UIViewController) -> Bool,
+        where predicate: (UIViewController) -> Bool,
         completion: ((UIViewController?) -> Void)? = nil
     ) {
-        guard let viewController = search(compare).last else {
+        guard let viewController = search(where: predicate).last else {
             // Not exist view controller that satisfies the compare statement.
             completion?(nil)
             return
@@ -71,6 +43,19 @@ public extension UIViewController {
         viewController.dismiss(animated: animated) {
             viewController.route(animated: animated) { completion?(viewController) }
         }
+    }
+    
+    /// Route to a view controller. if it exist in receiver's children.
+    public func route(
+        _ viewControlelr: UIViewController,
+        animated: Bool,
+        completion: ((Bool) -> Void)? = nil
+    ) {
+        route(
+            animated: animated,
+            where: { $0 == viewControlelr },
+            completion: { completion?($0 != nil) }
+        )
     }
     
     private func route(animated: Bool, completion: () -> Void) {
@@ -93,29 +78,36 @@ public extension UIViewController {
         parent.route(animated: animated, completion: completion)
     }
     
-    /// Search view controller that compared by closure.
+    /// Search view controller that compared by closure in receiver's children.
     ///
     /// ```
     /// let viewController = search { $0 is SomeViewController }
     /// ```
-    func search(_ compare: (UIViewController) -> Bool) -> [UIViewController] {
-        allViewControllers.filter(compare)
+    public func search(where predicate: (UIViewController) -> Bool) -> [UIViewController] {
+        let allViewControllers = allViewControllers
+        
+        guard let startIndex = allViewControllers.firstIndex(of: self) else {
+            return []
+        }
+        
+        let endIndex = allViewControllers.endIndex
+        let subViewControllers = allViewControllers[ startIndex ..< endIndex]
+        
+        return subViewControllers.filter(predicate)
     }
     
-    var topMostViewController: UIViewController {
-        subViewControllers.last ?? self
+    public var allViewControllers: [UIViewController] {
+        let superViewController = superViewController
+        
+        return [superViewController] + superViewController.subViewControllers
     }
     
-    var allViewControllers: [UIViewController] {
-        [superViewController] + superViewController.subViewControllers
-    }
-    
-    var superViewController: UIViewController {
+    private var superViewController: UIViewController {
         guard let parent = presentingViewController ?? parent else { return self }
         return parent.superViewController
     }
     
-    var subViewControllers: [UIViewController] {
+    private var subViewControllers: [UIViewController] {
         guard let presented = presentedViewController else {
             return descendants
         }
@@ -123,7 +115,7 @@ public extension UIViewController {
         return descendants + [presented] + presented.subViewControllers
     }
     
-    var descendants: [UIViewController] {
+    private var descendants: [UIViewController] {
         children.flatMap { [$0] + $0.descendants }
     }
 }

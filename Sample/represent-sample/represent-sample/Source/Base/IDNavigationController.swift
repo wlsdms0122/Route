@@ -34,5 +34,9 @@ class IDNavigationController: UINavigationController, Identifiable {
     // MARK: - Public
     
     // MARK: - Private
+    
+    deinit {
+        print("\(id) View controller deinited.")
+    }
 }
 

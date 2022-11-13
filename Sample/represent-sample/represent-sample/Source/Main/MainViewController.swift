@@ -52,8 +52,8 @@ struct MainModel {
 
 enum MainItem {
     case id(Int)
-    case stack([Int])
-    case step(Int)
+    case allStack([Int])
+    case step(value: Int, handler: (Int) -> Void)
     case route
     case log
     case presentNavigation
@@ -71,6 +71,7 @@ class MainViewController: UIViewController, Identifiable {
     private var dataSource = SectionDataSource()
     
     private var routeID: Int
+    private var logID: Int
     let id: Int
     
     private let disposeBag = DisposeBag()
@@ -79,6 +80,7 @@ class MainViewController: UIViewController, Identifiable {
     init(id: Int) {
         self.id = id
         self.routeID = id
+        self.logID = id
         super.init(nibName: nil, bundle: nil)
         
         setUp()
@@ -137,19 +139,30 @@ class MainViewController: UIViewController, Identifiable {
                 ),
                 items: [
                     .id(id),
-                    .stack(
-                        allViewControllers.compactMap { ($0 as? any Identifiable)?.id }
-                            .compactMap { $0 as? Int }
+                    .allStack(
+                        allViewControllers.compactMap(\.identifier)
                     )
                 ]
             ),
             .init(
                 model: .init(
-                    title: "ACTION"
+                    title: "ROUTING"
                 ),
                 items: [
-                    .step(routeID),
-                    .route,
+                    .step(value: routeID, handler: { [weak self] in
+                        self?.routeID = $0
+                    }),
+                    .route
+                ]
+            ),
+            .init(
+                model: .init(
+                    title: "LOG"
+                ),
+                items: [
+                    .step(value: logID, handler: { [weak self] in
+                        self?.logID = $0
+                    }),
                     .log
                 ]
             ),
@@ -169,9 +182,8 @@ class MainViewController: UIViewController, Identifiable {
     }
     
     private func route(to id: Int) {
-        route(animated: true) {
-            guard let identifiable = $0 as? any Identifiable else { return false }
-            return (identifiable.id as? Int) == id
+        rootViewController.route(animated: true) {
+            $0.identifier == id
         } completion: { [weak self] in
             guard let viewController = $0 else {
                 self?.showToast(message: "Fail to route. Not found \(id) view controller.")
@@ -186,6 +198,30 @@ class MainViewController: UIViewController, Identifiable {
                 """
             )
         }
+    }
+    
+    private func printLog(id: Int) {
+        guard let viewController = allViewControllers.first(where: { $0.identifier == id })
+        else {
+            print(
+                """
+                
+                Not found \(id) view controller.
+                """
+            )
+            return
+        }
+        
+        let allViewControllers = viewController.allViewControllers.compactMap(\.identifier)
+        
+        print(
+            """
+            
+            ❏ All view controllers: \(allViewControllers)
+            ❏ Log view controller: \(id)
+            ❏ Current view controller: \(self.id)
+            """
+        )
     }
     
     private func presentNavigationController() {
@@ -249,6 +285,10 @@ class MainViewController: UIViewController, Identifiable {
             showAnimator: .slideIn(duration: 0.1, direction: .down)
         )
     }
+    
+    deinit {
+        print("\(id) View controller deinited.")
+    }
 }
 
 extension MainViewController: UITableViewDataSource, UITableViewDelegate {
@@ -271,21 +311,21 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             
             return cell
             
-        case let .stack(stack):
+        case let .allStack(stack):
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainTableViewCell", for: indexPath) as? MainTableViewCell else { fatalError() }
             
-            cell.configure(title: "Stack", description: stack.description)
+            cell.configure(title: "All Stack", description: stack.description)
             
             return cell
             
-        case let .step(id):
+        case let .step(value, handler):
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "MainStepTableViewCell", for: indexPath) as? MainStepTableViewCell else { fatalError() }
             
             cell.configure(
-                value: id,
+                value: value,
                 range: (0 ..< .max)
-            ) { [weak self] in
-                self?.routeID = $0
+            ) {
+                handler($0)
             }
             
             return cell
@@ -340,7 +380,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
         
         switch item {
         case .id,
-            .stack,
+            .allStack,
             .step:
             return nil
             
@@ -359,7 +399,7 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             route(to: routeID)
             
         case .log:
-            print("Hello world!")
+            printLog(id: logID)
             
         case .presentNavigation:
             presentNavigationController()
@@ -374,4 +414,10 @@ extension MainViewController: UITableViewDataSource, UITableViewDelegate {
             break
         }
     }
+}
+
+extension UIViewController {
+    var identifier: Int? { (self as? any Identifiable<Int>)?.id }
+    
+    var rootViewController: UIViewController { allViewControllers.first ?? self }
 }
