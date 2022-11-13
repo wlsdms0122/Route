@@ -1,20 +1,30 @@
 //
-//  MainActionTableViewCell.swift
-//  represent-sample
+//  MainTableViewCell.swift
+//  route-sample
 //
-//  Created by JSilver on 2022/11/12.
+//  Created by JSilver on 2022/11/11.
 //  Copyright © 2022 JSilver. All rights reserved.
 //
 
 import UIKit
 import SnapKit
 
-class MainActionTableViewCell: UITableViewCell {
+class MainTableViewCell: UITableViewCell {
     // MARK: - View
     private let titleLable: UILabel = {
         let view = UILabel()
         view.font = .preferredFont(forTextStyle: .body)
-        view.textColor = view.tintColor
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        
+        return view
+    }()
+    
+    private let descriptionLabel: UILabel = {
+        let view = UILabel()
+        view.font = .preferredFont(forTextStyle: .body)
+        view.textColor = .lightGray
+        view.textAlignment = .right
+        view.numberOfLines = 0
         
         return view
     }()
@@ -36,11 +46,13 @@ class MainActionTableViewCell: UITableViewCell {
         super.prepareForReuse()
         
         titleLable.text = nil
+        descriptionLabel.text = nil
     }
     
     // MARK: - Public
-    public func configure(title: String) {
+    public func configure(title: String, description: String) {
         titleLable.text = title
+        descriptionLabel.text = description
     }
     
     // MARK: - Private
@@ -53,16 +65,28 @@ class MainActionTableViewCell: UITableViewCell {
     private func setUpLayout() {
         [
             titleLable,
+            descriptionLabel
         ]
             .forEach { contentView.addSubview($0) }
         
         titleLable.snp.makeConstraints {
-            $0.top.bottom
-                .equalToSuperview()
+            $0.top.equalToSuperview()
                 .inset(10)
-            $0.leading.trailing
-                .equalToSuperview()
-                .inset(16)
+            $0.bottom.lessThanOrEqualToSuperview()
+                .inset(10)
+            $0.leading.equalToSuperview()
+                .inset(10)
+        }
+        
+        descriptionLabel.snp.makeConstraints {
+            $0.top.equalToSuperview()
+                .inset(10)
+            $0.trailing.equalToSuperview()
+                .inset(10)
+            $0.bottom.lessThanOrEqualToSuperview()
+                .inset(10)
+            $0.leading.equalTo(titleLable.snp.trailing)
+                .offset(16)
         }
     }
     

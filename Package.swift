@@ -1,31 +1,31 @@
-// swift-tools-version: 5.6
+// swift-tools-version: 5.7
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
-    name: "Represent",
+    name: "Route",
     platforms: [
         .iOS(.v13)
     ],
     products: [
         .library(
-            name: "Represent",
+            name: "Route",
             targets: [
-                "Represent"
+                "Route"
             ]
         )
     ],
     dependencies: [],
     targets: [
         .target(
-            name: "Represent",
+            name: "Route",
             dependencies: []
         ),
         .testTarget(
-            name: "RepresentTests",
+            name: "RouteTests",
             dependencies: [
-                "Represent"
+                "Route"
             ]
         )
     ]

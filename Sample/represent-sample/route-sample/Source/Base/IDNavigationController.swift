@@ -1,6 +1,6 @@
 //
-//  IDTabBarController.swift
-//  represent-sample
+//  IDNavigationController.swift
+//  route-sample
 //
 //  Created by JSilver on 2022/11/11.
 //  Copyright © 2022 JSilver. All rights reserved.
@@ -8,18 +8,21 @@
 
 import UIKit
 
-class IDTabBarController: UITabBarController, Identifiable {
+class IDNavigationController: UINavigationController, Identifiable {
     // MARK: - Property
     let id: Int
     
     // MARK: - Initializer
-    init(id: Int, viewControllers: [UIViewController]) {
+    init(id: Int, rootViewController: UIViewController) {
         self.id = id
-        super.init(nibName: nil, bundle: nil)
+        super.init(rootViewController: rootViewController)
         
-        self.viewControllers = viewControllers
-
         title = String(id)
+        tabBarItem = UITabBarItem(
+            title: String(id),
+            image: UIImage(systemName: "circle"),
+            selectedImage: UIImage(systemName: "circle.fill")
+        )
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -36,3 +39,4 @@ class IDTabBarController: UITabBarController, Identifiable {
         print("\(id) View controller deinited.")
     }
 }
+
