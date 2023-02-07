@@ -49,12 +49,12 @@ extension UIViewController {
     public func route(
         _ viewControlelr: UIViewController,
         animated: Bool,
-        completion: ((Bool) -> Void)? = nil
+        completion: ((UIViewController?) -> Void)? = nil
     ) {
         route(
             animated: animated,
             where: { $0 == viewControlelr },
-            completion: { completion?($0 != nil) }
+            completion: { completion?($0) }
         )
     }
     
