@@ -116,7 +116,6 @@
 		F3A626EA249BB58800732A13 /* Support */ = {
 			isa = PBXGroup;
 			children = (
-				F3A626E1249BB58300732A13 /* LaunchScreen.storyboard */,
 				F3A626E4249BB58300732A13 /* Info.plist */,
 			);
 			path = Support;
@@ -136,6 +135,7 @@
 			isa = PBXGroup;
 			children = (
 				F3A626DF249BB58300732A13 /* Assets.xcassets */,
+				F3A626E1249BB58300732A13 /* LaunchScreen.storyboard */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
