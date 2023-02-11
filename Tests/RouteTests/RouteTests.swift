@@ -9,5 +9,9 @@ import XCTest
 @testable import Route
 
 final class RouteTests: XCTestCase {
+    // MARK: - Property
     
+    // MARK: - Lifecycle
+    
+    // MARK: - Test
 }

@@ -35,26 +35,26 @@ extension UIViewController {
         
         // Found view controller that satisfies the compare statement.
         guard viewController.presentedViewController != nil else {
-            viewController.route(animated: animated) { completion?(viewController) }
+            viewController.route(animated: animated) { [weak viewController] in completion?(viewController) }
             return
         }
         
         // Dismiss child view controller
-        viewController.dismiss(animated: animated) {
-            viewController.route(animated: animated) { completion?(viewController) }
+        viewController.dismiss(animated: animated) { [weak viewController] in
+            viewController?.route(animated: animated) { completion?(viewController) }
         }
     }
     
     /// Route to a view controller. if it exist in receiver's children.
-    public func route(
-        _ viewControlelr: UIViewController,
+    public func route<ViewController: UIViewController>(
+        to viewControlelr: ViewController,
         animated: Bool,
-        completion: ((UIViewController?) -> Void)? = nil
+        completion: ((ViewController?) -> Void)? = nil
     ) {
         route(
             animated: animated,
             where: { $0 == viewControlelr },
-            completion: { completion?($0) }
+            completion: { completion?($0 as? ViewController) }
         )
     }
     
@@ -94,6 +94,16 @@ extension UIViewController {
         let subViewControllers = allViewControllers[ startIndex ..< endIndex]
         
         return subViewControllers.filter(predicate)
+    }
+    
+    public func search<ViewController: UIViewController>(of viewController: ViewController) -> ViewController? {
+        search { $0 == viewController }
+            .first as? ViewController
+    }
+    
+    public func search<ViewController>(of type: ViewController.Type) -> [ViewController] {
+        search { $0 is ViewController }
+            .compactMap { $0 as? ViewController }
     }
     
     public var allViewControllers: [UIViewController] {
