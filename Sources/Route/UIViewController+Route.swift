@@ -35,13 +35,13 @@ extension UIViewController {
         
         // Found view controller that satisfies the compare statement.
         guard viewController.presentedViewController != nil else {
-            viewController.route(animated: animated) { completion?(viewController) }
+            viewController.route(animated: animated) { [weak viewController] in completion?(viewController) }
             return
         }
         
         // Dismiss child view controller
-        viewController.dismiss(animated: animated) {
-            viewController.route(animated: animated) { completion?(viewController) }
+        viewController.dismiss(animated: animated) { [weak viewController] in
+            viewController?.route(animated: animated) { completion?(viewController) }
         }
     }
     
