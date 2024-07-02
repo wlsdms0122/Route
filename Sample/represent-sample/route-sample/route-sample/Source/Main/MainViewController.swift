@@ -213,12 +213,14 @@ class MainViewController: UIViewController, Identifiable {
         }
         
         let allViewControllers = viewController.allViewControllers.compactMap(\.identifier)
+        let logViewControllers = viewController.navigationController?.viewControllers(until: viewController).compactMap(\.identifier) ?? []
         
         print(
             """
             
             ❏ All view controllers: \(allViewControllers)
             ❏ Log view controller: \(id)
+              ❏ View controllers until log view controller: \(logViewControllers)
             ❏ Current view controller: \(self.id)
             """
         )
